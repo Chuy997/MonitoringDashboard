@@ -1,21 +1,31 @@
 <?php
-include('../../config/config.php');
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "sensor_data";
 
-$humidity = $_GET['humidity'];
-$temperature = $_GET['temperature'];
+// Crear conexión
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
+// Verificar conexión
 if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+  die("Conexión fallida: " . $conn->connect_error);
 }
 
-$sql = "INSERT INTO measurements (humidity, temperature) VALUES ($humidity, $temperature)";
+// Verificar si se enviaron los datos
+if (isset($_POST['humidity']) && isset($_POST['temperature'])) {
+  $humidity = $_POST['humidity'];
+  $temperature = $_POST['temperature'];
 
-if ($conn->query($sql) === TRUE) {
-    echo "Datos insertados correctamente";
-} else {
+  $sql = "INSERT INTO measurements (humidity, temperature) VALUES ('$humidity', '$temperature')";
+
+  if ($conn->query($sql) === TRUE) {
+    echo "Nuevo registro creado exitosamente";
+  } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
+  }
+} else {
+  echo "Datos no recibidos";
 }
 
 $conn->close();
